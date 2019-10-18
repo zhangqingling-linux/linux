@@ -1,0 +1,20 @@
+vimautomysql.sh 
+#!/bin/bash
+tar -xf mysql-5.7.17.tar
+#把数据库所需安装包解压到当前目录
+yum -y install mysql-community-*.rpm
+#yum解决依赖关系安装
+#此步骤所需时间较长
+systemctl restart mysqld
+systemctl enable mysqld
+#重启及开机自启
+grep -i 'localhost:' /var/log/mysqld.log > 1.txt
+#这里查找出初始密码输出到1.txt文件
+pass=` awk  '{print $11}' 1.txt `
+#使用awk处理截取出密码字段
+mysqladmin -uroot -p"$pass" password "123qqq...A"
+#修改密码为123qqq...A     //这里有密码策略要求
+mysql -uroot -p"123qqq...A" -e 'show databases'
+#最后测试一下数据库目录是否可以正常显示
+rm -rf 1.txt
+#最后删除1.txt无用文件 
